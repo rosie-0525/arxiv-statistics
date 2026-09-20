@@ -1,0 +1,451 @@
+<title>arXiv Math Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f6f5f1; --surface:#fcfcfb; --ink:#141311; --ink-2:#52514e; --muted:#898781;
+  --grid:#e4e2db; --axis:#c3c2b7; --ring:rgba(11,11,11,.10); --ring-strong:rgba(11,11,11,.22);
+  --accent:#2a78d6; --marker:#5b5851; --tip-bg:#1d1c1a; --tip-ink:#f5f4ef; --tip-muted:#b9b7ae;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --plane:#0e0e0d; --surface:#1a1a19; --ink:#f4f3ee; --ink-2:#c3c2b7; --muted:#8f8d86;
+    --grid:#2c2c2a; --axis:#3b3b38; --ring:rgba(255,255,255,.10); --ring-strong:rgba(255,255,255,.26);
+    --accent:#3987e5; --marker:#b3b0a6; --tip-bg:#f4f3ee; --tip-ink:#141311; --tip-muted:#55534d;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --plane:#0e0e0d; --surface:#1a1a19; --ink:#f4f3ee; --ink-2:#c3c2b7; --muted:#8f8d86;
+  --grid:#2c2c2a; --axis:#3b3b38; --ring:rgba(255,255,255,.10); --ring-strong:rgba(255,255,255,.26);
+  --accent:#3987e5; --marker:#b3b0a6; --tip-bg:#f4f3ee; --tip-ink:#141311; --tip-muted:#55534d;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);font:14px/1.5 var(--sans);padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+h1{font-size:30px;line-height:1.15}
+h2{font-size:17px}
+p{margin:0}
+a{color:inherit}
+.lede{font-size:15px;color:var(--ink-2);max-width:66ch;margin-top:8px}
+.meta{font:12px/1.6 var(--mono);color:var(--muted);margin-top:10px}
+.meta b{color:var(--ink-2);font-weight:500}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:18px 20px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:5px;max-width:100%}
+.ctl-label{font:500 11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;flex-wrap:wrap;gap:1px;max-width:100%;border:1px solid var(--ring-strong);border-radius:7px;overflow:hidden;background:var(--ring-strong)}
+.seg button{appearance:none;border:0;background:var(--surface);color:var(--ink-2);font:500 13px/1 var(--sans);padding:8px 11px;cursor:pointer;flex:1 0 auto}
+.seg button:hover{background:color-mix(in srgb,var(--ink) 7%,var(--surface))}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.check{display:inline-flex;align-items:center;gap:7px;font:500 13px/1 var(--sans);color:var(--ink-2);padding:8px 0;cursor:pointer}
+.check input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
+button:focus-visible,.chip:focus-visible,.panel:focus-visible,summary:focus-visible,th:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chart-head{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.sub{color:var(--ink-2);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;min-height:0}
+.legend .item{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2)}
+.legend .key{width:16px;height:2px;border-radius:1px;background:var(--k)}
+.legend code{font:500 12px var(--mono);color:var(--ink)}
+.legend .x{appearance:none;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0 2px}
+.legend .x:hover{color:var(--ink)}
+.picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{appearance:none;display:inline-flex;align-items:center;gap:6px;font:12px/1 var(--mono);padding:5px 9px;border-radius:999px;border:1px solid var(--ring);background:transparent;color:var(--ink-2);cursor:pointer}
+.chip:hover{border-color:var(--ring-strong);color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.chip[aria-pressed="true"] .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--k)}
+.chip[disabled]{opacity:.42;cursor:not-allowed}
+.picker-note{font-size:12px;color:var(--muted);margin-top:8px}
+.chart-wrap{position:relative;margin-top:14px}
+.chart-wrap svg{display:block;width:100%;height:auto;font-family:var(--mono);touch-action:pan-y}
+.chart-wrap svg:focus{outline:none}
+.chart-wrap svg:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);border-radius:7px;padding:9px 11px;font:12px/1.45 var(--sans);box-shadow:0 6px 24px rgba(0,0,0,.18);max-width:300px;display:none}
+.tip.show{display:block}
+.tip .t{font-weight:600;margin-bottom:5px}
+.tip .row{display:grid;grid-template-columns:14px auto 1fr;gap:0 8px;align-items:center}
+.tip .row .k{width:14px;height:2px;border-radius:1px;background:var(--k)}
+.tip .row .v{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.tip .row .n{color:var(--tip-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tip .ev{margin-top:6px;padding-top:6px;border-top:1px solid color-mix(in srgb,var(--tip-ink) 18%,transparent);color:var(--tip-muted)}
+.tip .ev b{color:var(--tip-ink);font-weight:500}
+.tip .d{color:var(--tip-muted)}
+details.tbl{margin-top:14px;border-top:1px solid var(--ring);padding-top:10px}
+details.tbl summary{cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-2)}
+.tbl-wrap{overflow-x:auto;margin-top:10px;max-height:420px;overflow-y:auto;border:1px solid var(--ring);border-radius:7px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 10px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;border-bottom:1px solid var(--grid)}
+th{position:sticky;top:0;background:var(--surface);color:var(--muted);font:500 11px/1.3 var(--sans);letter-spacing:.04em;text-transform:uppercase;z-index:1}
+th:first-child,td:first-child{text-align:left}
+td:first-child{font:12px var(--mono);color:var(--ink)}
+td .nm{font:13px var(--sans);color:var(--ink-2);margin-left:6px}
+tbody tr:hover td{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+tbody tr.all td{font-weight:600;color:var(--ink)}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+th.sorted{color:var(--ink)}
+th.sorted::after{content:" ↓";font-weight:600}
+.neg{color:var(--ink-2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:14px}
+.panel{position:relative;background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:10px 12px 8px;cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:4px}
+.panel:hover{border-color:var(--ring-strong)}
+.panel[aria-pressed="true"]{border-color:var(--k);box-shadow:inset 0 0 0 1px var(--k)}
+.panel .ph{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.panel .code{font:500 12px var(--mono);color:var(--ink)}
+.panel .nm{font-size:12px;color:var(--ink-2);flex:1;min-width:0;overflow-wrap:anywhere}
+.panel .tot{font:12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.panel svg{display:block;width:100%;height:auto;font-family:var(--mono)}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px}
+.notes{font-size:13px;color:var(--ink-2);display:grid;gap:8px;max-width:78ch}
+.notes h2{margin-bottom:2px;color:var(--ink)}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.notes code{font:12px var(--mono);color:var(--ink)}
+.srcs{font-size:12px;color:var(--muted)}
+@media (max-width:560px){h1{font-size:25px}.card{padding:14px 14px}.seg button{padding:8px 9px;font-size:12px}}
+@media (prefers-reduced-motion: no-preference){.chip,.seg button,.panel{transition:background .12s,border-color .12s,color .12s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>arXiv Math Pulse</h1>
+    <p class="lede">New submissions to every arXiv mathematics subject, counted by day, week, month, quarter or year, with the release dates of major AI models marked on the same axis.</p>
+    <p class="meta" id="meta"></p>
+  </header>
+
+  <section class="card controls" aria-label="Filters">
+    <div class="ctl"><span class="ctl-label" id="l-range">Range</span>
+      <div class="seg" role="group" aria-labelledby="l-range" data-key="range">
+        <button type="button" id="range-all" data-v="all">All (2018–)</button>
+        <button type="button" id="range-2020" data-v="2020">Since 2020</button>
+        <button type="button" id="range-chatgpt" data-v="chatgpt">Since ChatGPT</button>
+        <button type="button" id="range-24m" data-v="24m">24 months</button>
+        <button type="button" id="range-12m" data-v="12m">12 months</button>
+      </div></div>
+    <div class="ctl"><span class="ctl-label" id="l-gran">Per</span>
+      <div class="seg" role="group" aria-labelledby="l-gran" data-key="gran">
+        <button type="button" id="gran-day" data-v="day">Day</button>
+        <button type="button" id="gran-week" data-v="week">Week</button>
+        <button type="button" id="gran-month" data-v="month">Month</button>
+        <button type="button" id="gran-quarter" data-v="quarter">Quarter</button>
+        <button type="button" id="gran-year" data-v="year">Year</button>
+      </div></div>
+    <div class="ctl"><span class="ctl-label" id="l-mode">Count a paper under</span>
+      <div class="seg" role="group" aria-labelledby="l-mode" data-key="mode">
+        <button type="button" id="mode-primary" data-v="primary">Primary subject</button>
+        <button type="button" id="mode-any" data-v="any">Any listed subject</button>
+      </div></div>
+    <div class="ctl"><span class="ctl-label" id="l-scale">Scale</span>
+      <div class="seg" role="group" aria-labelledby="l-scale" data-key="scale">
+        <button type="button" id="scale-count" data-v="count">Papers</button>
+        <button type="button" id="scale-index" data-v="index">Index (2019 = 100)</button>
+      </div></div>
+    <div class="ctl"><span class="ctl-label" id="l-marks">AI releases</span>
+      <div class="seg" role="group" aria-labelledby="l-marks" data-key="marks">
+        <button type="button" id="marks-major" data-v="major">Major</button>
+        <button type="button" id="marks-all" data-v="all">All</button>
+        <button type="button" id="marks-none" data-v="none">None</button>
+      </div></div>
+    <label class="check" for="smooth"><input type="checkbox" id="smooth"> <span id="smooth-label">Smooth</span></label>
+    <label class="check" for="context"><input type="checkbox" id="context"> Math AI milestones &amp; COVID</label>
+  </section>
+
+  <section class="card" aria-labelledby="main-h">
+    <div class="chart-head">
+      <div><h2 id="main-h">Compare subjects</h2><p class="sub" id="main-sub"></p></div>
+      <p class="sub" id="main-hint">Hover or focus the chart and use ← → to read values.</p>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="chart-wrap" id="main-chart"></div>
+    <div class="picker" id="picker" role="group" aria-label="Subjects to compare (up to 8)"></div>
+    <p class="picker-note" id="picker-note"></p>
+    <details class="tbl" id="tableView"><summary>Table view of this chart</summary><div class="tbl-wrap" id="tableWrap"></div></details>
+  </section>
+
+  <section class="card" aria-labelledby="mult-h">
+    <div class="sec-head"><h2 id="mult-h">Every subject</h2><p class="sub" id="mult-sub"></p></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="card" aria-labelledby="sum-h">
+    <div class="sec-head"><h2 id="sum-h">Papers per month, by year</h2><p class="sub" id="sum-sub"></p></div>
+    <div class="tbl-wrap" style="max-height:none;margin-top:14px" id="summaryWrap"></div>
+  </section>
+
+  <section class="card notes" aria-labelledby="notes-h">
+    <h2 id="notes-h">How to read this</h2>
+    <ul>
+      <li><b>Source.</b> arXiv's bulk OAI-PMH feed (set <code>math</code>, <code>arXiv</code> metadata), harvested on <span id="n-gen"></span>. A paper is dated by its first version's submission date. Days after <span id="n-end"></span> are not yet fully announced and are excluded; incomplete weeks, months, quarters and years are dropped rather than shown as a false dip.</li>
+      <li><b>Primary vs any.</b> "Primary subject" counts each paper once, under its first category (only papers whose primary category is a math subject). "Any listed subject" also counts cross-lists, so a paper listed under math.AG and math.AT appears in both. Aliases are merged: math.MP = math-ph, math.IT = cs.IT, math.ST = stat.TH.</li>
+      <li><b>Index.</b> Each series divided by its own 2019 average for the chosen granularity, so subjects of very different sizes can be compared on one axis.</li>
+      <li><b>Daily counts</b> dip every weekend because submissions are dated by the day they arrive, not the day they are announced. Smoothing applies a centered 7-day, 5-week or 3-month average.</li>
+      <li><b>AI releases</b> are the public launch dates of frontier models (from company announcements and Wikipedia). "Major" is a hand-picked subset; "All" adds the point releases. The optional milestones layer adds mathematics-specific AI results and the start of the COVID-19 pandemic, which caused its own 2020 submission surge.</li>
+      <li><b>Caution.</b> arXiv math volume has grown steadily for two decades; a rise after a release date is not, by itself, evidence that the release caused it.</li>
+    </ul>
+    <p class="srcs">Release dates: OpenAI, Anthropic, Google DeepMind, Meta, xAI and DeepSeek announcements; Wikipedia articles on GPT-5, GPT-5.2, GPT-5.5, GPT-6, Claude and Gemini (retrieved 20 Sep 2026).</p>
+  </section>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const DATA = __DATA__;
+const EVENTS = __EVENTS__;
+const CATS = DATA.cats, NAMES = DATA.names;
+const MS = 86400000;
+const SP = DATA.start.split('-').map(Number);
+const startMs = Date.UTC(SP[0], SP[1]-1, SP[2]);
+const dow0 = new Date(startMs).getUTCDay();
+function dIdx(s){ const p = s.split('-').map(Number); return Math.round((Date.UTC(p[0], p[1]-1, p[2]) - startMs)/MS); }
+function idxDate(i){ return new Date(startMs + i*MS); }
+function monthStartIdx(y, m){ return Math.round((Date.UTC(y, m, 1) - startMs)/MS); }
+function monthStartOf(i){ const d = idxDate(i); return monthStartIdx(d.getUTCFullYear(), d.getUTCMonth()); }
+const N = DATA.primary.ALL.length, LAST = N-1;
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const SMOOTH = {day:7, week:5, month:3};
+const SMOOTH_LABEL = {day:'Smooth (7-day average)', week:'Smooth (5-week average)', month:'Smooth (3-month average)', quarter:'Smooth (not applied per quarter)', year:'Smooth (not applied per year)'};
+const fmtInt = n => Math.round(n).toLocaleString('en-US');
+const fmtVal = (n, scale) => scale === 'index' ? (Math.round(n*10)/10).toLocaleString('en-US', {minimumFractionDigits:1, maximumFractionDigits:1}) : (Number.isInteger(n) ? fmtInt(n) : (Math.round(n*10)/10).toLocaleString('en-US', {minimumFractionDigits:1, maximumFractionDigits:1}));
+function fmtDate(d){ return d.getUTCDate() + ' ' + MON[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); }
+function fmtDay(d){ return DOW[d.getUTCDay()] + ' ' + fmtDate(d); }
+function labelOf(cat){ return cat === 'ALL' ? 'All math' : cat; }
+function nameOf(cat){ return cat === 'ALL' ? 'every math subject combined' : NAMES[cat]; }
+EVENTS.forEach(e => { e.i = dIdx(e.d); e.dt = idxDate(e.i); });
+EVENTS.sort((a,b) => a.i - b.i);
+
+// ---------- state ----------
+const DEFAULT = {range:'2020', gran:'month', mode:'primary', scale:'count', smooth:false, marks:'major', context:false, sel:['ALL'], slots:{ALL:0}, sort:'y2026'};
+let state = Object.assign({}, DEFAULT);
+try { const s = JSON.parse(localStorage.getItem('arxiv-math-pulse') || 'null'); if (s && s.sel && s.slots) state = Object.assign({}, DEFAULT, s); } catch (e) {}
+state.sel = state.sel.filter(c => c === 'ALL' || CATS.includes(c));
+if (!state.sel.length) { state.sel = ['ALL']; state.slots = {ALL:0}; }
+function save(){ try { localStorage.setItem('arxiv-math-pulse', JSON.stringify(state)); } catch (e) {} }
+
+// ---------- data helpers ----------
+const pref = {};
+function prefix(mode, cat){ const k = mode + '|' + cat; if (pref[k]) return pref[k]; const a = DATA[mode][cat]; const p = new Float64Array(a.length + 1); for (let i = 0; i < a.length; i++) p[i+1] = p[i] + a[i]; return pref[k] = p; }
+function sumRange(mode, cat, s, e){ const p = prefix(mode, cat); return p[Math.min(e, N)] - p[Math.max(s, 0)]; }
+function buckets(gran, from, to){
+  const out = [];
+  if (gran === 'day') { for (let i = from; i <= to; i++) out.push({s:i, e:i+1}); return out; }
+  if (gran === 'week') { let s = from; while ((s + dow0 - 1) % 7 !== 0) s++; for (; s + 6 <= to; s += 7) out.push({s, e:s+7}); return out; }
+  const d0 = idxDate(from); let y = d0.getUTCFullYear(), m = d0.getUTCMonth();
+  const step = gran === 'month' ? 1 : gran === 'quarter' ? 3 : 12;
+  if (gran === 'quarter') m -= m % 3; if (gran === 'year') m = 0;
+  for (let guard = 0; guard < 2000; guard++) { const s = monthStartIdx(y, m), e = monthStartIdx(y, m + step); if (s > to) break; if (s >= from && e - 1 <= to) out.push({s, e}); m += step; if (m >= 12) { y += Math.floor(m/12); m %= 12; } }
+  return out;
+}
+function bucketLabel(b, gran){ const d = idxDate(b.s); switch (gran) {
+  case 'day': return fmtDay(d);
+  case 'week': return 'Week of ' + fmtDate(d);
+  case 'month': return MONL[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+  case 'quarter': return d.getUTCFullYear() + ' Q' + (Math.floor(d.getUTCMonth()/3) + 1);
+  default: return String(d.getUTCFullYear()); } }
+function bucketShort(b, gran){ const d = idxDate(b.s); switch (gran) {
+  case 'day': return d.toISOString().slice(0,10);
+  case 'week': return d.toISOString().slice(0,10);
+  case 'month': return d.getUTCFullYear() + '-' + String(d.getUTCMonth()+1).padStart(2,'0');
+  case 'quarter': return d.getUTCFullYear() + ' Q' + (Math.floor(d.getUTCMonth()/3) + 1);
+  default: return String(d.getUTCFullYear()); } }
+const baseCache = {};
+function baseline(cat, gran, mode){ const k = mode + '|' + gran + '|' + cat; if (baseCache[k] != null) return baseCache[k]; const bks = buckets(gran, dIdx('2019-01-01'), dIdx('2019-12-31')); const v = bks.map(b => sumRange(mode, cat, b.s, b.e)); return baseCache[k] = v.reduce((a,b) => a+b, 0) / Math.max(1, v.length); }
+function smooth(v, w){ const h = Math.floor(w/2); return v.map((_, i) => { let s = 0, n = 0; for (let j = i-h; j <= i+h; j++) if (j >= 0 && j < v.length) { s += v[j]; n++; } return s/n; }); }
+function seriesValues(cat, bks, opts){ const o = opts || state; let v = bks.map(b => sumRange(o.mode, cat, b.s, b.e));
+  if (o.scale === 'index') { const base = baseline(cat, o.gran, o.mode); v = v.map(x => base > 0 ? x/base*100 : NaN); }
+  if (o.smooth && SMOOTH[o.gran]) v = smooth(v, SMOOTH[o.gran]);
+  return v; }
+function rangeIdx(){ const to = LAST; let from = 0; switch (state.range) {
+  case '2020': from = dIdx('2020-01-01'); break;
+  case 'chatgpt': from = dIdx('2022-06-01'); break;
+  case '24m': from = monthStartOf(to - 730); break;
+  case '12m': from = monthStartOf(to - 365); break; }
+  return [Math.max(0, from), to]; }
+function visibleEvents(from, to){ return EVENTS.filter(e => e.i >= from && e.i <= to && ((e.k === 'model' && (state.marks === 'all' || (state.marks === 'major' && e.t === 1))) || (e.k === 'context' && state.context))); }
+function niceStep(range, n){ const raw = range/n || 1; const p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw/p; const nf = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10; return nf*p; }
+function xTicks(from, to, plotW){ const span = to - from; const ticks = []; const d0 = idxDate(from); let y = d0.getUTCFullYear(), m = d0.getUTCMonth();
+  if (span > 1100) { if (monthStartIdx(y, 0) < from) y++; for (; ; y++) { const i = monthStartIdx(y, 0); if (i > to) break; ticks.push({i, label:String(y)}); } }
+  else if (span > 400) { m -= m % 3; for (let g = 0; g < 200; g++) { const i = monthStartIdx(y, m); if (i > to) break; if (i >= from) ticks.push({i, label: m === 0 ? String(y) : MON[m]}); m += 3; if (m >= 12) { m = 0; y++; } } }
+  else if (span > 100) { let first = true; for (let g = 0; g < 200; g++) { const i = monthStartIdx(y, m); if (i > to) break; if (i >= from) { ticks.push({i, label: (m === 0 || first) ? MON[m] + ' ' + y : MON[m]}); first = false; } m++; if (m >= 12) { m = 0; y++; } } }
+  else { let s = from; while ((s + dow0 - 1) % 7 !== 0) s++; for (; s <= to; s += 7) { const d = idxDate(s); ticks.push({i:s, label: d.getUTCDate() + ' ' + MON[d.getUTCMonth()]}); } }
+  const minPx = 56; const k = Math.max(1, Math.ceil(ticks.length * minPx / Math.max(1, plotW))); return ticks.filter((_, j) => j % k === 0); }
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){ const n = document.createElementNS(SVGNS, tag); if (attrs) for (const k in attrs) { if (k === 'style') n.style.cssText = attrs[k]; else if (k === 'text') n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]); } if (parent) parent.appendChild(n); return n; }
+function hel(tag, cls, text){ const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+function colorVar(cat){ const s = state.slots[cat]; return s == null ? 'var(--s1)' : 'var(--s' + (s+1) + ')'; }
+function pathD(pts){ let d = ''; let pen = false; for (const p of pts) { if (p == null) { pen = false; continue; } d += (pen ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); pen = true; } return d; }
+
+// ---------- tooltip ----------
+const tip = document.getElementById('tip');
+function showTip(x, y, build){ tip.textContent = ''; build(tip); tip.classList.add('show'); const r = tip.getBoundingClientRect(); let left = x + 14, top = y + 14; if (left + r.width > window.innerWidth - 8) left = x - r.width - 14; if (left < 8) left = 8; if (top + r.height > window.innerHeight - 8) top = y - r.height - 14; if (top < 8) top = 8; tip.style.left = left + 'px'; tip.style.top = top + 'px'; }
+function hideTip(){ tip.classList.remove('show'); }
+function tipRow(parent, cat, val, scale){ const row = hel('div', 'row'); const k = hel('span', 'k'); k.style.setProperty('--k', colorVar(cat)); row.appendChild(k); row.appendChild(hel('span', 'v', Number.isNaN(val) ? '–' : fmtVal(val, scale))); row.appendChild(hel('span', 'n', labelOf(cat) + (cat === 'ALL' ? '' : ' · ' + NAMES[cat]))); parent.appendChild(row); }
+function tipEvents(parent, evs){ if (!evs.length) return; const box = hel('div', 'ev'); evs.forEach(e => { const line = hel('div'); line.appendChild(hel('b', null, e.n)); line.appendChild(document.createTextNode(' · ' + fmtDate(e.dt))); box.appendChild(line); }); parent.appendChild(box); }
+
+// ---------- main chart ----------
+const mainWrap = document.getElementById('main-chart');
+let mainCache = null;
+function renderMain(){
+  const [from, to] = rangeIdx();
+  const bks = buckets(state.gran, from, to);
+  const W = Math.max(320, mainWrap.clientWidth || 800), narrow = W < 600;
+  const H = narrow ? 330 : 430;
+  mainWrap.textContent = '';
+  const measure = (state.scale === 'index' ? 'index, 2019 average = 100' : 'papers') + ' per ' + state.gran + (state.smooth && SMOOTH[state.gran] ? ', smoothed' : '') + ' · by ' + (state.mode === 'primary' ? 'primary subject' : 'any listed subject');
+  document.getElementById('main-sub').textContent = (state.sel.length === 1 ? labelOf(state.sel[0]) + ' (' + nameOf(state.sel[0]) + ') · ' : '') + measure;
+  if (!bks.length) { const m = hel('div', 'empty', 'No complete ' + state.gran + ' falls inside this range. Pick a longer range or a finer granularity.'); mainWrap.appendChild(m); mainCache = null; renderDataTable(); return; }
+  const series = state.sel.map(cat => ({cat, vals: seriesValues(cat, bks)}));
+  let ymax = 0; series.forEach(s => s.vals.forEach(v => { if (v > ymax) ymax = v; })); if (!(ymax > 0)) ymax = 1;
+  const step = niceStep(ymax, 4), yTop = Math.ceil(ymax/step) * step;
+  const evs = visibleEvents(from, to);
+  const laneMax = state.marks === 'all' ? 4 : 3, laneH = 15;
+  const mL = 12 + String(fmtVal(yTop, state.scale)).length * 7.2, mR = narrow ? 14 : 78, mB = 30;
+  const plotW = W - mL - mR;
+  const xOf = i => mL + (i - from) / (to + 1 - from) * plotW;
+  // label lanes for events
+  const charW = 6.35, lanes = [];
+  const withLabel = [];
+  const tryPlace = e => { const x0 = xOf(e.i + .5) + 4, w = e.n.length * charW + 6; if (x0 + w > W - 2) { return; } for (let l = 0; l < laneMax; l++) { lanes[l] = lanes[l] || []; if (!lanes[l].some(iv => !(x0 + w < iv[0] || x0 > iv[1]))) { lanes[l].push([x0, x0 + w]); e.lane = l; withLabel.push(e); return; } } };
+  evs.forEach(e => { e.lane = -1; }); evs.filter(e => e.t === 1).forEach(tryPlace); evs.filter(e => e.t !== 1).forEach(tryPlace);
+  const laneCount = lanes.length;
+  const mT = 8 + laneCount * laneH + (laneCount ? 6 : 6);
+  const plotH = H - mT - mB, plotB = mT + plotH;
+  const yOf = v => plotB - v / yTop * plotH;
+  const svg = el('svg', {viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', tabindex: '0', 'aria-label': 'Line chart of ' + measure + ' for ' + state.sel.map(labelOf).join(', ')});
+  // gridlines + y labels
+  for (let v = 0; v <= yTop + 1e-9; v += step) { const y = yOf(v); el('line', {x1: mL, x2: W - mR + (narrow ? 0 : 4), y1: y, y2: y, stroke: v === 0 ? 'var(--axis)' : 'var(--grid)', 'stroke-width': 1}, svg); el('text', {x: mL - 8, y: y + 3.5, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)', text: fmtVal(v, state.scale)}, svg); }
+  // x ticks
+  xTicks(from, to, plotW).forEach(t => { const x = xOf(t.i); el('line', {x1: x, x2: x, y1: plotB, y2: plotB + 4, stroke: 'var(--axis)'}, svg); el('text', {x, y: plotB + 17, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)', text: t.label}, svg); });
+  // events
+  const evG = el('g', null, svg);
+  evs.forEach(e => { const x = xOf(e.i + .5); const top = e.lane >= 0 ? 8 + e.lane * laneH + 4 : mT; const ctx = e.k === 'context';
+    el('line', {x1: x, x2: x, y1: top, y2: plotB, stroke: 'var(--marker)', 'stroke-width': 1, 'stroke-opacity': ctx ? .3 : (e.t === 1 ? .55 : .3)}, evG);
+    if (ctx) el('path', {d: 'M' + x + ' ' + (mT - 1) + 'l4 5 -4 5 -4 -5z', fill: 'var(--marker)', 'fill-opacity': .7}, evG);
+    if (e.lane >= 0) el('text', {x: x + 4, y: 8 + e.lane * laneH + 9, 'font-size': 10.5, fill: ctx ? 'var(--muted)' : (e.t === 1 ? 'var(--ink-2)' : 'var(--muted)'), 'font-style': ctx ? 'italic' : 'normal', text: e.n}, evG); });
+  // series
+  const pts = series.map(s => s.vals.map((v, j) => Number.isNaN(v) ? null : [xOf((bks[j].s + bks[j].e) / 2), yOf(v)]));
+  if (series.length === 1) { const p = pts[0].filter(Boolean); if (p.length > 1) el('path', {d: pathD(p) + 'L' + p[p.length-1][0].toFixed(1) + ' ' + plotB + 'L' + p[0][0].toFixed(1) + ' ' + plotB + 'Z', style: 'fill:' + colorVar(series[0].cat) + ';fill-opacity:.1'}, svg); }
+  series.forEach((s, k) => el('path', {d: pathD(pts[k]), fill: 'none', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', style: 'stroke:' + colorVar(s.cat)}, svg));
+  // end dots + labels
+  const ends = series.map((s, k) => { let j = pts[k].length - 1; while (j >= 0 && !pts[k][j]) j--; return j < 0 ? null : {cat: s.cat, x: pts[k][j][0], y: pts[k][j][1], ly: pts[k][j][1]}; }).filter(Boolean);
+  ends.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].ly < ends[i-1].ly + 13) ends[i].ly = ends[i-1].ly + 13;
+  const over = ends.length ? ends[ends.length-1].ly - (plotB - 4) : 0; if (over > 0) ends.forEach(e => e.ly -= over);
+  for (let i = ends.length - 2; i >= 0; i--) if (ends[i].ly > ends[i+1].ly - 13) ends[i].ly = ends[i+1].ly - 13;
+  ends.forEach(e => { el('circle', {cx: e.x, cy: e.y, r: 4, style: 'fill:' + colorVar(e.cat) + ';stroke:var(--surface);stroke-width:2'}, svg);
+    if (!narrow) { if (Math.abs(e.ly - e.y) > 4) el('line', {x1: e.x + 5, y1: e.y, x2: e.x + 11, y2: e.ly, stroke: 'var(--axis)', 'stroke-width': 1}, svg); el('text', {x: e.x + 13, y: e.ly + 3.5, 'font-size': 11, 'font-weight': 500, fill: 'var(--ink-2)', text: labelOf(e.cat)}, svg); } });
+  // crosshair
+  const cross = el('g', {style: 'display:none'}, svg);
+  const cl = el('line', {y1: mT, y2: plotB, stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-opacity': .7}, cross);
+  const dots = series.map(s => el('circle', {r: 4.5, style: 'fill:' + colorVar(s.cat) + ';stroke:var(--surface);stroke-width:2'}, cross));
+  const hit = el('rect', {x: mL, y: 0, width: plotW + (narrow ? 0 : 4), height: plotB, fill: 'transparent'}, svg);
+  mainWrap.appendChild(svg);
+  mainCache = {bks, series, from, to};
+  let cur = -1;
+  const centers = bks.map(b => xOf((b.s + b.e) / 2));
+  function nearestBucket(px){ let lo = 0, hi = centers.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (centers[mid] < px) lo = mid + 1; else hi = mid; } if (lo > 0 && Math.abs(centers[lo-1] - px) < Math.abs(centers[lo] - px)) lo--; return lo; }
+  function showAt(j, cx, cy){ cur = j; const b = bks[j]; cross.style.display = ''; cl.setAttribute('x1', centers[j]); cl.setAttribute('x2', centers[j]);
+    series.forEach((s, k) => { const v = s.vals[j]; if (Number.isNaN(v)) dots[k].style.display = 'none'; else { dots[k].style.display = ''; dots[k].setAttribute('cx', centers[j]); dots[k].setAttribute('cy', yOf(v)); } });
+    const inB = EVENTS.filter(e => e.i >= b.s && e.i < b.e && (e.k === 'model' ? state.marks !== 'none' && (state.marks === 'all' || e.t === 1) : state.context));
+    showTip(cx, cy, t => { t.appendChild(hel('div', 't', bucketLabel(b, state.gran))); series.forEach(s => tipRow(t, s.cat, s.vals[j], state.scale)); tipEvents(t, inB); }); }
+  function hideAll(){ cur = -1; cross.style.display = 'none'; hideTip(); }
+  svg.addEventListener('pointermove', ev => { const r = svg.getBoundingClientRect(); const sx = W / r.width; const px = (ev.clientX - r.left) * sx, py = (ev.clientY - r.top) * sx;
+    if (px < mL || px > W - mR + 4) { hideAll(); return; }
+    if (py < mT && evs.length) { let best = null, bd = 9; evs.forEach(e => { const d = Math.abs(xOf(e.i + .5) - px); if (d < bd) { bd = d; best = e; } }); if (best) { cross.style.display = 'none'; showTip(ev.clientX, ev.clientY, t => { t.appendChild(hel('div', 't', best.n)); t.appendChild(hel('div', 'd', best.o)); t.appendChild(hel('div', 'd', fmtDay(best.dt))); }); return; } }
+    showAt(nearestBucket(px), ev.clientX, ev.clientY); });
+  svg.addEventListener('pointerleave', hideAll);
+  svg.addEventListener('keydown', ev => { if (ev.key === 'Escape') { hideAll(); return; } if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return; ev.preventDefault(); let j = cur < 0 ? bks.length - 1 : cur; if (ev.key === 'ArrowLeft') j = Math.max(0, j - 1); else if (ev.key === 'ArrowRight') j = Math.min(bks.length - 1, j + 1); else if (ev.key === 'Home') j = 0; else j = bks.length - 1; const r = svg.getBoundingClientRect(); const s = r.width / W; showAt(j, r.left + centers[j] * s, r.top + mT * s + 20); });
+  svg.addEventListener('blur', hideAll);
+  hit.setAttribute('aria-hidden', 'true');
+  renderDataTable();
+}
+function renderDataTable(){ const d = document.getElementById('tableView'); const wrap = document.getElementById('tableWrap'); wrap.textContent = ''; if (!d.open || !mainCache) return;
+  const {bks, series} = mainCache; const CAP = 1200; const start = Math.max(0, bks.length - CAP);
+  const t = hel('table'); const th = hel('thead'); const tr = hel('tr'); tr.appendChild(hel('th', null, state.gran)); series.forEach(s => tr.appendChild(hel('th', null, labelOf(s.cat)))); th.appendChild(tr); t.appendChild(th);
+  const tb = hel('tbody'); for (let j = bks.length - 1; j >= start; j--) { const r = hel('tr'); r.appendChild(hel('td', null, bucketShort(bks[j], state.gran))); series.forEach(s => r.appendChild(hel('td', null, Number.isNaN(s.vals[j]) ? '–' : fmtVal(s.vals[j], state.scale)))); tb.appendChild(r); } t.appendChild(tb); wrap.appendChild(t);
+  if (start > 0) wrap.appendChild(hel('p', 'picker-note', 'Showing the most recent ' + CAP + ' of ' + bks.length + ' rows.')); }
+document.getElementById('tableView').addEventListener('toggle', renderDataTable);
+
+// ---------- legend + picker ----------
+function renderLegend(){ const lg = document.getElementById('legend'); lg.textContent = ''; if (state.sel.length < 2) { lg.style.display = 'none'; return; } lg.style.display = '';
+  state.sel.forEach(cat => { const it = hel('span', 'item'); const k = hel('span', 'key'); k.style.setProperty('--k', colorVar(cat)); it.appendChild(k); it.appendChild(hel('code', null, labelOf(cat))); it.appendChild(document.createTextNode(cat === 'ALL' ? '' : NAMES[cat])); const x = hel('button', 'x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Remove ' + labelOf(cat)); x.addEventListener('click', () => toggleCat(cat)); it.appendChild(x); lg.appendChild(it); }); }
+function toggleCat(cat){ const i = state.sel.indexOf(cat);
+  if (i >= 0) { if (state.sel.length === 1) return; state.sel.splice(i, 1); delete state.slots[cat]; }
+  else { if (state.sel.length >= 8) return; const used = new Set(Object.values(state.slots)); let s = 0; while (used.has(s)) s++; state.slots[cat] = s; state.sel.push(cat); }
+  save(); renderAll(); }
+function renderPicker(){ const p = document.getElementById('picker'); p.textContent = ''; const full = state.sel.length >= 8;
+  ['ALL'].concat(CATS).forEach(cat => { const b = hel('button', 'chip'); b.type = 'button'; b.id = 'chip-' + cat.replace('.', '-'); const on = state.sel.includes(cat); b.setAttribute('aria-pressed', on ? 'true' : 'false'); if (on) { b.style.setProperty('--k', colorVar(cat)); b.appendChild(hel('span', 'dot')); } b.appendChild(document.createTextNode(labelOf(cat))); b.title = nameOf(cat); if (!on && full) { b.disabled = true; b.title += ' — remove a subject first (up to 8 at once)'; } b.addEventListener('click', () => toggleCat(cat)); p.appendChild(b); });
+  document.getElementById('picker-note').textContent = full ? 'Eight subjects is the maximum; remove one to add another.' : 'Pick up to 8 subjects to plot together. Colors stay with a subject while it is selected.'; }
+
+// ---------- small multiples ----------
+const grid = document.getElementById('grid');
+function renderMultiples(){ const [from, to] = rangeIdx(); const bks = buckets(state.gran, from, to); grid.textContent = '';
+  document.getElementById('mult-sub').textContent = 'Each panel on its own scale · ' + (state.scale === 'index' ? 'index (2019 = 100)' : 'papers') + ' per ' + state.gran + ' · sorted by volume in range · click a panel to add it above';
+  if (!bks.length) { grid.appendChild(hel('div', 'empty', 'No complete ' + state.gran + ' in this range.')); return; }
+  const evs = visibleEvents(from, to).filter(e => e.t === 1);
+  const cols = CATS.map(cat => ({cat, vals: seriesValues(cat, bks), tot: sumRange(state.mode, cat, from, to + 1)})).sort((a, b) => b.tot - a.tot);
+  const pw = Math.max(180, (grid.clientWidth || 900) / Math.max(1, Math.floor((grid.clientWidth || 900) / 242)) - 12 - 26);
+  const W = Math.round(pw), H = 96, mT = 16, mB = 4, mL = 2, mR = 2, plotH = H - mT - mB, plotB = mT + plotH, plotW = W - mL - mR;
+  cols.forEach(c => { const sel = state.sel.includes(c.cat); const pan = hel('button', 'panel'); pan.type = 'button'; pan.id = 'panel-' + c.cat.replace('.', '-'); pan.setAttribute('aria-pressed', sel ? 'true' : 'false'); const col = sel ? colorVar(c.cat) : 'var(--s1)'; pan.style.setProperty('--k', col);
+    const ph = hel('div', 'ph'); const left = hel('div'); left.appendChild(hel('span', 'code', c.cat)); left.appendChild(document.createTextNode(' ')); left.appendChild(hel('span', 'nm', NAMES[c.cat])); ph.appendChild(left); ph.appendChild(hel('span', 'tot', fmtInt(c.tot))); pan.appendChild(ph);
+    let ymax = 0; c.vals.forEach(v => { if (v > ymax) ymax = v; }); if (!(ymax > 0)) ymax = 1; const yTop = ymax;
+    const xOf = i => mL + (i - from) / (to + 1 - from) * plotW, yOf = v => plotB - v / yTop * (plotH - 2);
+    const svg = el('svg', {viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, 'aria-hidden': 'true'});
+    el('line', {x1: mL, x2: W - mR, y1: plotB, y2: plotB, stroke: 'var(--axis)', 'stroke-width': 1}, svg);
+    evs.forEach(e => { const x = xOf(e.i + .5); el('line', {x1: x, x2: x, y1: mT - 2, y2: plotB, stroke: 'var(--marker)', 'stroke-width': 1, 'stroke-opacity': e.k === 'context' ? .18 : .28}, svg); });
+    const p = c.vals.map((v, j) => Number.isNaN(v) ? null : [xOf((bks[j].s + bks[j].e) / 2), yOf(v)]); const pf = p.filter(Boolean);
+    if (pf.length > 1) el('path', {d: pathD(pf) + 'L' + pf[pf.length-1][0].toFixed(1) + ' ' + plotB + 'L' + pf[0][0].toFixed(1) + ' ' + plotB + 'Z', style: 'fill:' + col + ';fill-opacity:.1'}, svg);
+    el('path', {d: pathD(p), fill: 'none', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', style: 'stroke:' + col}, svg);
+    if (pf.length) el('circle', {cx: pf[pf.length-1][0], cy: pf[pf.length-1][1], r: 4, style: 'fill:' + col + ';stroke:var(--surface);stroke-width:2'}, svg);
+    el('text', {x: mL, y: 10, 'font-size': 10, fill: 'var(--muted)', text: 'peak ' + fmtVal(ymax, state.scale)}, svg);
+    const cross = el('line', {y1: mT, y2: plotB, stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-opacity': .7, style: 'display:none'}, svg);
+    const centers = bks.map(b => xOf((b.s + b.e) / 2));
+    svg.addEventListener('pointermove', ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) * W / r.width; let lo = 0, hi = centers.length - 1; while (lo < hi) { const mid = (lo + hi) >> 1; if (centers[mid] < px) lo = mid + 1; else hi = mid; } if (lo > 0 && Math.abs(centers[lo-1] - px) < Math.abs(centers[lo] - px)) lo--; cross.style.display = ''; cross.setAttribute('x1', centers[lo]); cross.setAttribute('x2', centers[lo]);
+      const b = bks[lo]; const inB = EVENTS.filter(e => e.i >= b.s && e.i < b.e && (e.k === 'model' ? state.marks !== 'none' && (state.marks === 'all' || e.t === 1) : state.context));
+      showTip(ev.clientX, ev.clientY, t => { t.appendChild(hel('div', 't', bucketLabel(b, state.gran))); const row = hel('div', 'row'); const k = hel('span', 'k'); k.style.setProperty('--k', col); row.appendChild(k); row.appendChild(hel('span', 'v', Number.isNaN(c.vals[lo]) ? '–' : fmtVal(c.vals[lo], state.scale))); row.appendChild(hel('span', 'n', c.cat)); t.appendChild(row); tipEvents(t, inB); }); });
+    svg.addEventListener('pointerleave', () => { cross.style.display = 'none'; hideTip(); });
+    pan.appendChild(svg); pan.title = (sel ? 'Remove ' : 'Add ') + c.cat + ' ' + (sel ? 'from' : 'to') + ' the comparison chart'; pan.addEventListener('click', () => toggleCat(c.cat)); grid.appendChild(pan); }); }
+
+// ---------- summary table ----------
+function renderSummary(){ const wrap = document.getElementById('summaryWrap'); wrap.textContent = '';
+  const endD = idxDate(LAST); const lastFullMonthEnd = monthStartOf(LAST); const lastY = idxDate(lastFullMonthEnd - 1).getUTCFullYear(); const lastM = idxDate(lastFullMonthEnd - 1).getUTCMonth();
+  const years = [2019, 2022, 2024, 2025, 2026].filter(y => y <= lastY);
+  const nMonths = y => y === lastY ? lastM + 1 : 12;
+  const avg = (cat, y) => sumRange(state.mode, cat, monthStartIdx(y, 0), Math.min(monthStartIdx(y, 12), lastFullMonthEnd)) / nMonths(y);
+  const rows = ['ALL'].concat(CATS).map(cat => { const r = {cat}; years.forEach(y => r['y' + y] = avg(cat, y)); const l = r['y' + lastY]; r.d22 = r.y2022 > 0 ? (l / r.y2022 - 1) * 100 : NaN; r.d24 = r.y2024 > 0 ? (l / r.y2024 - 1) * 100 : NaN; return r; });
+  const key = state.sort in rows[0] ? state.sort : 'y' + lastY; const head = rows.shift(); rows.sort((a, b) => (Number.isNaN(b[key]) ? -Infinity : b[key]) - (Number.isNaN(a[key]) ? -Infinity : a[key])); rows.unshift(head);
+  document.getElementById('sum-sub').textContent = 'Average new papers per month, by ' + (state.mode === 'primary' ? 'primary subject' : 'any listed subject') + ' · ' + lastY + ' covers Jan–' + MON[lastM] + ' · click a column to sort';
+  const t = hel('table'); const th = hel('thead'); const tr = hel('tr'); tr.appendChild(hel('th', null, 'Subject'));
+  const cols = years.map(y => ({k: 'y' + y, label: y === lastY ? y + ' (Jan–' + MON[lastM] + ')' : String(y)})).concat([{k: 'd22', label: 'Change vs 2022'}, {k: 'd24', label: 'Change vs 2024'}]);
+  cols.forEach(c => { const h = hel('th', 'sortable' + (c.k === key ? ' sorted' : ''), c.label); h.tabIndex = 0; h.setAttribute('role', 'button'); h.setAttribute('aria-sort', c.k === key ? 'descending' : 'none'); const go = () => { state.sort = c.k; save(); renderSummary(); }; h.addEventListener('click', go); h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); tr.appendChild(h); }); th.appendChild(tr); t.appendChild(th);
+  const tb = hel('tbody'); rows.forEach(r => { const row = hel('tr', r.cat === 'ALL' ? 'all' : null); const c0 = hel('td', null, labelOf(r.cat)); if (r.cat !== 'ALL') c0.appendChild(hel('span', 'nm', NAMES[r.cat])); row.appendChild(c0);
+    years.forEach(y => row.appendChild(hel('td', null, fmtInt(r['y' + y])))); ['d22', 'd24'].forEach(k => { const v = r[k]; const td = hel('td', v < 0 ? 'neg' : null, Number.isNaN(v) ? '–' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(0) + '%'); row.appendChild(td); }); tb.appendChild(row); }); t.appendChild(tb); wrap.appendChild(t); }
+
+// ---------- controls ----------
+function syncControls(){ document.querySelectorAll('.seg').forEach(seg => { const key = seg.dataset.key; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(state[key]) === b.dataset.v ? 'true' : 'false')); });
+  document.getElementById('smooth').checked = !!state.smooth; document.getElementById('smooth-label').textContent = SMOOTH_LABEL[state.gran]; document.getElementById('smooth').disabled = !SMOOTH[state.gran];
+  document.getElementById('context').checked = !!state.context; }
+document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; state[seg.dataset.key] = b.dataset.v; save(); renderAll(); }));
+document.getElementById('smooth').addEventListener('change', ev => { state.smooth = ev.target.checked; save(); renderAll(); });
+document.getElementById('context').addEventListener('change', ev => { state.context = ev.target.checked; save(); renderAll(); });
+
+function renderAll(){ syncControls(); renderLegend(); renderPicker(); renderMain(); renderMultiples(); renderSummary(); }
+document.getElementById('meta').innerHTML = '';
+(function(){ const m = document.getElementById('meta'); const b1 = hel('b', null, fmtInt(DATA.nPrimary)); m.appendChild(b1); m.appendChild(document.createTextNode(' papers with a math primary subject (' + fmtInt(DATA.nAny) + ' counting cross-lists) · ' + fmtDate(idxDate(0)) + ' → ' + fmtDate(idxDate(LAST)) + ' · harvested ' + DATA.generated + ' from arXiv OAI-PMH')); })();
+document.getElementById('n-gen').textContent = DATA.generated; document.getElementById('n-end').textContent = fmtDate(idxDate(LAST));
+let raf = 0; let lastW = 0;
+new ResizeObserver(() => { const w = mainWrap.clientWidth; if (Math.abs(w - lastW) < 4) return; lastW = w; cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { renderMain(); renderMultiples(); }); }).observe(mainWrap);
+document.fonts && document.fonts.ready.then(() => renderAll());
+renderAll();
+})();
+</script>

@@ -1,0 +1,4 @@
+# raw OAI-PMH harvest (~60 MB, regenerate with harvest.py)
+data/
+__pycache__/
+.DS_Store
