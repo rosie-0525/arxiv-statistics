@@ -203,12 +203,12 @@ details.sec>summary:hover h2{color:var(--accent)}
   </section>
 
   <details class="card sec" id="multView">
-    <summary class="sec-head"><h2 id="mult-h">Trends by subject</h2><p class="sub" id="mult-sub"></p></summary>
+    <summary class="sec-head"><h2 id="mult-h">Trends by subject</h2></summary>
     <div class="grid" id="grid"></div>
   </details>
 
   <details class="card sec" id="sumView">
-    <summary class="sec-head"><h2 id="sum-h">Papers per month, by year</h2><p class="sub" id="sum-sub"></p></summary>
+    <summary class="sec-head"><h2 id="sum-h">Table view</h2></summary>
     <div class="tbl-wrap" style="max-height:none;margin-top:14px" id="summaryWrap"></div>
   </details>
 
@@ -405,7 +405,6 @@ function renderPicker(){ const p = document.getElementById('picker'); p.textCont
 // ---------- small multiples ----------
 const grid = document.getElementById('grid');
 function renderMultiples(){ const [from, to] = rangeIdx(); const bks = buckets(state.gran, from, to); grid.textContent = '';
-  document.getElementById('mult-sub').textContent = 'Each panel on its own scale · papers per ' + state.gran + ' · % is the change from the first to the last ' + state.gran + ' in range · sorted by volume · click a panel to add it above';
   if (!bks.length) { grid.appendChild(hel('div', 'empty', 'No complete ' + state.gran + ' in this range.')); return; }
   const evs = visibleEvents(from, to).filter(e => e.t === 1);
   const cols = CATS.map(cat => ({cat, vals: seriesValues(cat, bks), tot: sumRange(state.mode, cat, from, to + 1)})).sort((a, b) => b.tot - a.tot);
@@ -440,7 +439,6 @@ function renderSummary(){ const wrap = document.getElementById('summaryWrap'); w
   const avg = (cat, y) => sumRange(state.mode, cat, monthStartIdx(y, 0), Math.min(monthStartIdx(y, 12), lastFullMonthEnd)) / nMonths(y);
   const rows = ['ALL'].concat(CATS).map(cat => { const r = {cat}; years.forEach(y => r['y' + y] = avg(cat, y)); const l = r['y' + lastY]; r.d22 = r.y2022 > 0 ? (l / r.y2022 - 1) * 100 : NaN; r.d24 = r.y2024 > 0 ? (l / r.y2024 - 1) * 100 : NaN; return r; });
   const key = state.sort in rows[0] ? state.sort : 'y' + lastY; const head = rows.shift(); rows.sort((a, b) => (Number.isNaN(b[key]) ? -Infinity : b[key]) - (Number.isNaN(a[key]) ? -Infinity : a[key])); rows.unshift(head);
-  document.getElementById('sum-sub').textContent = 'Average new papers per month, by ' + (state.mode === 'primary' ? 'primary subject' : 'any listed subject') + ' · ' + lastY + ' covers Jan–' + MON[lastM] + ' · click a column to sort';
   const t = hel('table'); const th = hel('thead'); const tr = hel('tr'); tr.appendChild(hel('th', null, 'Subject'));
   const cols = years.map(y => ({k: 'y' + y, label: y === lastY ? y + ' (Jan–' + MON[lastM] + ')' : String(y)})).concat([{k: 'd22', label: 'Change vs 2022'}, {k: 'd24', label: 'Change vs 2024'}]);
   cols.forEach(c => { const h = hel('th', 'sortable' + (c.k === key ? ' sorted' : ''), c.label); h.tabIndex = 0; h.setAttribute('role', 'button'); h.setAttribute('aria-sort', c.k === key ? 'descending' : 'none'); const go = () => { state.sort = c.k; save(); renderSummary(); }; h.addEventListener('click', go); h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); tr.appendChild(h); }); th.appendChild(tr); t.appendChild(th);
