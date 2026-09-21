@@ -4,8 +4,6 @@ Trend dashboard of new arXiv submissions in every mathematics subject (math.AC â
 counted per day / week / month / quarter / year, with the release dates of major AI models
 marked on the same axis.
 
-Published copy: https://claude.ai/artifact/EYJC9MESJXBt21Dv8ozZXC
-
 ## Files
 
 | File | What it is |
