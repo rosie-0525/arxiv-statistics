@@ -8,9 +8,9 @@ marked on the same axis.
 
 | File | What it is |
 |---|---|
-| `arxiv_math_pulse.html` | The finished, self-contained page (open it directly in a browser). |
+| `index.html` | The finished, self-contained page (open it directly in a browser or deploy to GitHub Pages). |
 | `template.html` | Page source: HTML, CSS and the charting JavaScript, with `__DATA__` / `__EVENTS__` placeholders. |
-| `build.py` | Injects `data.json` and `events.json` into the template → `arxiv_math_pulse.html`. |
+| `build.py` | Injects `data.json` and `events.json` into the template → `index.html`. |
 | `aggregate.py` | Turns the raw harvest in `data/` into `data.json` (daily counts per subject, primary and any-listing). |
 | `harvest.py` | Downloads arXiv metadata via OAI-PMH (`set=math`, `metadataPrefix=arXiv`). |
 | `events.json` | AI model release dates and context milestones drawn on the charts (`t`: 1 = major, 2 = other; `k`: model / context). |
@@ -28,7 +28,7 @@ wait
 
 # 2. Aggregate and build
 python3 aggregate.py     # writes data.json, prints per-year totals and the last complete day
-python3 build.py         # writes arxiv_math_pulse.html
+python3 build.py         # writes index.html
 ```
 
 `harvest.py` appends to its output file and logs to `<out>.log`; delete the old files (or use a fresh
